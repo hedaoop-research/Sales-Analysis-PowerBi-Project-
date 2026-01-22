@@ -19,7 +19,4 @@ An end-to-end Business Intelligence solution developed to analyze sales performa
 1. **PBIT File:** You can download the `Sales Analysis.pbit` file and open it in Power BI Desktop (this will prompt you for the data source).
 2. **PBIP Folder:** This repository contains the project structure which can be used for version control.
 
-## 🔍 Sample Insights
-- Identified a [Insert %] increase in sales during [Insert Quarter/Month].
-- Discovered that [Insert Category] contributes to over [Insert %] of total profit.
-- Optimized the data model to reduce report refresh time by [Insert %].
+
