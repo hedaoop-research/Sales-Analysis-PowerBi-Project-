@@ -1,0 +1,72 @@
+table products
+	lineageTag: 65383819-2127-44db-ab36-b2f0a97485b8
+
+	measure 'Total Revenue' = ```
+			SUMX(Orders, Orders[Quantity] * RELATED(products[Price (INR)]))
+			
+			```
+		formatString: 0
+		lineageTag: a36a76ee-3f39-433d-8fc0-778a63796b5f
+
+	column Product_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: a50c8795-1dc3-430b-a600-be1ece03a907
+		summarizeBy: none
+		sourceColumn: Product_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product_Name
+		dataType: string
+		lineageTag: aef4d366-72f6-4e4d-95d0-fe9e0c9b060a
+		summarizeBy: none
+		sourceColumn: Product_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: ffac8fc3-146f-4569-a559-88db8012077f
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Price (INR)'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0e0e0116-df52-46a3-81e8-2a935541d185
+		summarizeBy: none
+		sourceColumn: Price (INR)
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occasion
+		dataType: string
+		lineageTag: 213f36a7-f47f-45cf-91f4-fcc3ec8c0e5f
+		summarizeBy: none
+		sourceColumn: Occasion
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: e3e53435-0a76-4d7c-a633-e0cc09cb1e9a
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition products = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\ssb\Desktop\BAI\products.csv"),[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Product_ID", Int64.Type}, {"Product_Name", type text}, {"Category", type text}, {"Price (INR)", Int64.Type}, {"Occasion", type text}, {"Description", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

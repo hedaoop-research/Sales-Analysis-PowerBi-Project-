@@ -1,0 +1,159 @@
+table orders
+	lineageTag: 594716da-a4d4-441c-9288-ea3ffa10a15b
+
+	measure Avg_orders = AVERAGE(Orders[Order-Delivery Days])
+		lineageTag: 2905da5d-6dee-4fc4-8c00-ac575966fab6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Order_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: cb212266-ed01-47d5-946a-7abf9a790609
+		summarizeBy: count
+		sourceColumn: Order_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Customer_ID
+		dataType: string
+		lineageTag: 473f380d-e442-41de-b8d6-cdf06e0d7fcb
+		summarizeBy: none
+		sourceColumn: Customer_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: d74f45b0-a17c-4bab-8acf-687d210ba47d
+		summarizeBy: none
+		sourceColumn: Product_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 479bc350-55e3-40cf-af1f-42ab7a180ceb
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Order_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c49aef75-8e68-4d20-8c94-18ab7c121fc8
+		summarizeBy: none
+		sourceColumn: Order_Date
+
+		variation Variation
+			isDefault
+			relationship: 964faf85-8d96-45af-8551-32b26c7958a0
+			defaultHierarchy: LocalDateTable_26133d7b-1694-45fd-a6c2-b85446183c51.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Order_Time
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: cb4cd502-0c64-4702-8ac3-140a6bbb43ad
+		summarizeBy: none
+		sourceColumn: Order_Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column Delivery_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 16ad8caa-54f7-4ead-9e13-183a12e7433b
+		summarizeBy: none
+		sourceColumn: Delivery_Date
+
+		variation Variation
+			isDefault
+			relationship: ff7fb979-f507-4cf7-a779-4a80cc6d1c3c
+			defaultHierarchy: LocalDateTable_46120636-7fbc-4987-a787-011586f7c0ce.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Delivery_Time
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: fa067e98-6ef3-4139-a0f3-f76115660f80
+		summarizeBy: none
+		sourceColumn: Delivery_Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column Location
+		dataType: string
+		lineageTag: 649a8661-c332-4c1b-9ee1-0eff7240fd21
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occasion
+		dataType: string
+		lineageTag: eb486cf6-0e02-47ed-aaa7-475d1e3ad8a4
+		summarizeBy: none
+		sourceColumn: Occasion
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order-Delivery Days' = ```
+			DATEDIFF(orders[Order_Date], orders[Delivery_Date], DAY)
+			
+			```
+		formatString: 0
+		lineageTag: 7d543826-0e98-4f16-89e6-4bc5f6391ded
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderTime_Hour
+		dataType: int64
+		formatString: 0
+		lineageTag: f7bff442-e8c5-4dc3-abb6-673e3112dc2a
+		summarizeBy: sum
+		sourceColumn: OrderTime_Hour
+
+		annotation SummarizationSetBy = Automatic
+
+	column Order_Month
+		dataType: int64
+		formatString: 0
+		lineageTag: 86fa76c8-7012-465d-983c-8b8c0a0ba56e
+		summarizeBy: sum
+		sourceColumn: Order_Month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\ssb\Desktop\BAI\orders.csv"),[Delimiter=",", Columns=10, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Order_ID", Int64.Type}, {"Customer_ID", type text}, {"Product_ID", Int64.Type}, {"Quantity", Int64.Type}, {"Order_Date", type date}, {"Order_Time", type time}, {"Delivery_Date", type date}, {"Delivery_Time", type time}, {"Location", type text}, {"Occasion", type text}}),
+				    #"Inserted Hour" = Table.AddColumn(#"Changed Type", "Hour", each Time.Hour([Order_Time]), Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Inserted Hour",{{"Hour", "OrderTime_Hour"}}),
+				    #"Inserted Month" = Table.AddColumn(#"Renamed Columns", "Month", each Date.Month([Order_Date]), Int64.Type),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Inserted Month",{{"Month", "Order_Month"}})
+				in
+				    #"Renamed Columns1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,72 @@
+table customers
+	lineageTag: 107cd0fe-3408-4edc-8cf9-07fad2374462
+
+	column Customer_ID
+		dataType: string
+		lineageTag: ba5abdd3-c480-403d-8749-23fa26d4e255
+		summarizeBy: none
+		sourceColumn: Customer_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 70abb273-7984-4265-bc2f-57be523b7fb1
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: fffc2e61-80aa-4f58-8181-8b6072e83ba8
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column Contact_Number
+		dataType: int64
+		formatString: 0
+		lineageTag: de845f4b-17ef-4670-baca-8518bd4b1da9
+		summarizeBy: none
+		sourceColumn: Contact_Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 8e2d701c-e3b0-4263-9939-620af0a42856
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: cbe95666-7b6d-48eb-be8d-c10fde346e61
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column Address
+		dataType: string
+		lineageTag: c92449f7-fb28-44a4-b1fe-489e8c2b16d7
+		summarizeBy: none
+		sourceColumn: Address
+
+		annotation SummarizationSetBy = Automatic
+
+	partition customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\ssb\Desktop\BAI\customers.csv"),[Delimiter=",", Columns=7, Encoding=1252, QuoteStyle=QuoteStyle.Csv]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Customer_ID", type text}, {"Name", type text}, {"City", type text}, {"Contact_Number", Int64.Type}, {"Email", type text}, {"Gender", type text}, {"Address", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
